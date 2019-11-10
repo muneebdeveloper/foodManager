@@ -3,38 +3,48 @@ import firebase from '../firebase';
 import uuidv4 from 'uuidv4';
 import mime from 'mime-types';
 
+
 import ErrorDialog from '../misc/errordialog/ErrorDialog';
 import SnackBar from '../misc/snackbar/Snackbar';
 import TextField from '@material-ui/core/TextField';
+import FormControl from '@material-ui/core/FormControl';
+import InputLabel from '@material-ui/core/InputLabel';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import RidersTable from './RidersTable';
+
+import FoodTable from './FoodTable';
 import DialogUpdate from './DialogUpdate';
 import DialogRemove from './DialogRemove';
 
 import styles from './index.css';
 
 
-let loadedRiders=[];
+let loadedFood=[];
 
-class Riders extends Component{
+class Food extends Component{
 
     state={
         name:'',
-        phone:'',
-        riders:[],
-        imagefile:'',
+        price:'',
+        restaurantID:'',
+        restaurantRemoveID:'',
+        food:[],
+        restaurants:[],
         snackbar:false,
         errorDialog:false,
         errorMessage:'',
+        imagefile:'',
         snackbarMessage:'',
-        ridersRef:firebase.database().ref('RIDERS'),
+        foodRef:firebase.database().ref('FOOD'),
         loadingTableProgress:false,
-        loadingFormProgress:false,
+        loadingFormProgress:true,
         dialogUpdateOpen:false,
         dialogRemoveOpen:false,
         editObject:{},
-        removeID:''
+        removeID:'',
+        restaurantID:''
     }
 
     changeHandler = (e)=>{
@@ -45,54 +55,81 @@ class Riders extends Component{
 
     }
 
-    componentDidMount(){
-        
 
-        this.state.ridersRef.on('child_added',snap=>{
-            loadedRiders.push(snap.val());
-            this.setState({
-                riders:[...loadedRiders],
-                loadingFormProgress:false
-            })
-        });
-        
-        this.removeRidersListener();
-        this.updateRidersListener();
+    imageChangeHandler = (e)=>{
+        this.setState({
+            imagefile:e.target.files[0]
+        })
     }
 
-   removeRidersListener = ()=>{
+
+    componentDidMount(){
+
+        let loadedRestaurants = [];
+
+        firebase.database().ref("RESTAURANTS").on('child_added',snap=>{
+
+            loadedRestaurants.push(snap.val());
+
+            this.setState({
+                restaurants:[...loadedRestaurants],
+                loadingFormProgress:false
+            });
+
+        });
+
+        this.state.foodRef.on('child_added',snap=>{
+            let requiredObject = snap.val();
+            let restaurant = loadedRestaurants.find((restaurant)=>{
+                return restaurant.id == requiredObject.restaurantID;
+            });
+            loadedFood.push({...requiredObject,restaurantName:restaurant.name,restaurantID:restaurant.id});
+            this.setState({
+                food:[...loadedFood],
+                loadingTableProgress:false
+            })
+        });
+
+        this.removeFoodListener();
+        this.updateFoodListener();
+    }
+
+    removeFoodListener = ()=>{
         let loadedItem = {};
 
-        this.state.ridersRef.on('child_removed',snap=>{
+        this.state.foodRef.on('child_removed',snap=>{
             loadedItem = snap.val();
             this.setState((state)=>{
-                let index = state.riders.findIndex((el)=>{
+                let index = state.food.findIndex((el)=>{
                     return(
                         el.id==loadedItem.id
                     )
                 });
-                state.riders.splice(index,1);
-                loadedRiders.splice(index,1);
+                state.food.splice(index,1);
+                loadedFood.splice(index,1);
                 return{
-                    loadingTableProgress:false,
+                    loadingTableProgress:false
                 }
 
             });
         })
     }
 
-    updateRidersListener = ()=>{
+    updateFoodListener = ()=>{
         let loadedItem = {};
-        this.state.ridersRef.on('child_changed',snap=>{
+        this.state.foodRef.on('child_changed',snap=>{
             loadedItem=snap.val();
+            let restaurant = this.state.restaurants.find((restaurant)=>{
+                return restaurant.id===loadedItem.restaurant; 
+            });
             this.setState((state)=>{
-                let index = state.riders.findIndex((el)=>{
+                let index = state.food.findIndex((el)=>{
                     return(
                         el.id==loadedItem.id
                     )
                 });
-                state.riders[index]={...loadedItem};
-                loadedRiders[index]={...loadedItem};
+                state.food[index]={...loadedItem,restaurantName:restaurant.name,restaurantID:restaurant.id};
+                loadedFood[index]={...loadedItem,restaurantName:restaurant.name,restaurantID:restaurant.id};
                 return{
                     loadingTableProgress:false
                 }
@@ -105,34 +142,45 @@ class Riders extends Component{
 
         e.preventDefault();
 
-        const {name,phone,imagefile} = this.state;
+        const {name,price,restaurantID,imagefile} = this.state;
         this.setState({
             loadingFormProgress:true
         })
-        const filepath = `images/riders/${uuidv4()}.jpg`;
+        const filepath = `images/food/${uuidv4()}.jpg`;
         const metadata = {contentType:mime.lookup(imagefile.name)};
+    
         let task = firebase.storage().ref().child(filepath).put(imagefile,metadata);
         task
         .then(snapshot => snapshot.ref.getDownloadURL())
         .then(url => {
-            const key = this.state.ridersRef.push().key;
-            this.state.ridersRef
+            const key = this.state.foodRef.push().key;
+            this.state.foodRef
             .child(key)
             .set({
                 id:key,
                 name,
-                phone,
+                price,
+                restaurantID,
+                count:0,
+                restaurant:"null",
                 imageURI:url,
-                status:"active"
             }).then(
                 ()=>{
+                    let valueObject;
+                    firebase.database().ref("RESTAURANTS").child(restaurantID).once("value",(snap)=>{
+                        valueObject = snap.val();
+                    });
+                    firebase.database().ref("RESTAURANTS").child(restaurantID).update({
+                        ...(valueObject.foodItems ? {foodItems:[...valueObject.foodItems,key]}:{foodItems:[key]})
+                    });
                     this.setState({
                         name:'',
-                        phone:'',
+                        price:'',
                         imagefile:'',
+                        restaurantID:'',
                         loadingFormProgress:false
                     });
-                    this.snackbarHandler("Rider was successfully added");
+                    this.snackbarHandler("Food was successfully added");
                 }
             ).catch(
                 (err)=>{
@@ -159,22 +207,19 @@ class Riders extends Component{
         })
     }
 
-    imageChangeHandler = (e)=>{
-        this.setState({
-            imagefile:e.target.files[0]
-        })
-    }
-
-
     componentWillUnmount(){
-        this.state.ridersRef.off();
+        this.state.foodRef.off();
     }
 
     render(){
         const {
             name,
-            phone,
-            riders,
+            price,
+            restaurantID,
+            restaurantRemoveID,
+            food,
+            restaurants,
+            imagefile,
             snackbar,
             errorDialog,
             errorMessage,
@@ -189,7 +234,7 @@ class Riders extends Component{
         
         return(
             <div className="maincover responsivepadding">
-                <h2 className={styles.hstyle}>Manage the riders:</h2>
+                <h2 className={styles.hstyle}>Manage the food:</h2>
                     <form onSubmit={this.formSubmitHandler}>
                     <div className="formareastyles">
                         {
@@ -199,30 +244,45 @@ class Riders extends Component{
                                 </div>
                             ):(
                             <div className="mainFormStyle">
-            
 
-                                <TextField 
+                            <TextField 
                                     label="Name"
                                     variant="outlined"
                                     name="name"
                                     type="text"
                                     value={name}
-                                    required
                                     onChange={this.changeHandler}
                                     fullWidth
-                                />
+                            />
 
-                                <TextField 
-                                    label="Phone"
+                            <TextField 
+                                    label="Price"
                                     variant="outlined"
-                                    name="phone"
-                                    type="text"
-                                    value={phone}
-                                    required
+                                    name="price"
+                                    type="number"
+                                    value={price}
                                     onChange={this.changeHandler}
                                     fullWidth
-                                />
-                                
+                            />
+
+                                <FormControl fullWidth  required>
+                                    <InputLabel>Select Restaurant</InputLabel>
+                                    <Select
+                                        name="restaurantID"
+                                        value={restaurantID}
+                                        onChange={this.changeHandler}
+                                    >
+                                        {   
+                                            restaurants.map((restaurant,index)=>{
+                                                const {id,name} = restaurant;
+                                                return(
+                                                    <MenuItem key={index} value={id}>{name}</MenuItem>
+                                                    )
+                                            })
+                                        }
+                                        </Select>
+                                </FormControl>
+
                                 <label htmlFor="imagefile" >Choose an image</label>
                                 <input 
                                     type="file" 
@@ -230,14 +290,16 @@ class Riders extends Component{
                                     onChange={this.imageChangeHandler}
                                     accept="image/*" 
                                 />
-                
+
+
                                     <Button 
                                         variant="contained"
                                         type="submit"
                                         size="large"
                                         fullWidth
+                                        disabled={!imagefile?true:false}
                                     >
-                                        Create Rider
+                                        Create Food
                                     </Button>
                                 
                             </div>
@@ -252,41 +314,46 @@ class Riders extends Component{
                                     <tr>
                                         <th>Sr#</th>
                                         <th>Name</th>
-                                        <th>Phone</th>
+                                        <th>Price</th>
+                                        <th>Restaurant</th>
                                         <th>Image</th>
                                         <th style={{minWidth:"81px"}}>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {
-                                        riders.map((rider,index)=>{
-                                            const {id,name,phone,imageURI} = rider;
+                                        food.map((offer,index)=>{
+                                            const {id,name,price,restaurantName,restaurantID,imageURI} = offer;
                                             return(
-                                                <RidersTable
+                                                <FoodTable
                                                     id={id}
                                                     key={index}
                                                     sr={index+1}
                                                     name={name}
-                                                    phone={phone}
+                                                    price={price}
+                                                    restaurant={restaurantName}
+                                                    restaurantID={restaurantID}
                                                     image={imageURI}
                                                     editClickHandler={
-                                                        async (id,name,phone,image)=>{
+                                                        async (id,name,price,restaurantID,image)=>{
                                                             await this.setState({
                                                                 dialogUpdateOpen:true,
                                                                 editObject:{
                                                                     id,
                                                                     name,
-                                                                    phone,
-                                                                    image
+                                                                    price,
+                                                                    restaurantID,
+                                                                    image,
                                                                 }
                                                             })
                                                         }
                                                     }
                                                     removeClickHandler={
-                                                        (removeID)=>{
+                                                        (removeID,restaurantID)=>{
                                                             this.setState({
                                                                 dialogRemoveOpen:true,
-                                                                removeID
+                                                                removeID,
+                                                                restaurantRemoveID:restaurantID
                                                             })
                                                         }
                                                     }
@@ -310,6 +377,7 @@ class Riders extends Component{
                         dialogUpdateOpen={dialogUpdateOpen}
                         dialogUpdateClose={()=>this.setState({dialogUpdateOpen:false})}
                         editObject={editObject}
+                        restaurants={[...restaurants]}
                         snackbarHandler={(message)=>this.snackbarHandler(message)}
                         errorDialogHandler={()=>this.errorDialogHandler}
                     />
@@ -322,6 +390,7 @@ class Riders extends Component{
                             dialogRemoveOpen={dialogRemoveOpen}
                             dialogRemoveClose={()=>this.setState({dialogRemoveOpen:false})}
                             removeID={removeID}
+                            restaurantID={restaurantRemoveID}
                             snackbarHandler={(message)=>this.snackbarHandler(message)}
                             errorDialogHandler={()=>this.errorDialogHandler}
                         />
@@ -343,4 +412,4 @@ class Riders extends Component{
 }
 
 
-export default Riders;
+export default Food;
