@@ -1,0 +1,31 @@
+.hstyle{
+    font-weight:300;
+    margin-top:20px;
+    margin-bottom:25px;
+}
+
+.edit{
+    color:#379237 !important;
+}
+
+.delete{
+    color:#e21e1e !important;
+}
+
+.deleteButton{
+    background-color:#e21e1e !important;
+}
+
+.loadingtableprogress{
+    display:flex;
+    justify-content: center;
+    margin-bottom:40px;
+}
+
+.editDialogMargin>*{
+    margin-bottom:20px !important;
+}
+
+.edithstyle{
+    font-weight:300;
+}

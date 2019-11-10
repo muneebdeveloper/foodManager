@@ -1,0 +1,21 @@
+
+.message{
+    display: flex !important;
+    align-items: center !important;
+  }
+
+.success{
+    background-color:#43a047 !important;
+}
+
+.failed{
+    background-color:#e21e1e !important;
+}
+
+.marginright{
+    margin-right:6px !important;
+}
+
+.iconcolor{
+    color:white !important;
+}
