@@ -29,3 +29,14 @@
 .edithstyle{
     font-weight:300;
 }
+
+.chipdiv{
+    width:100%;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+}
+
+.chipinput{
+    width:75% !important;
+}

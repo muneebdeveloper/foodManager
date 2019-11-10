@@ -9,13 +9,8 @@ import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
 
 import Cancel from '@material-ui/icons/Cancel';
-
 
 import styles from './index.css';
 
@@ -23,13 +18,12 @@ import styles from './index.css';
 class DialogUpdate extends Component{
 
     state={
-        foodname:this.props.editObject.name,
-        foodprice:this.props.editObject.price,
-        categoryname:this.props.editObject.category,
-        categories:[...this.props.categories],
-        foodRef:firebase.database().ref('ITEMS'),
+        name:this.props.editObject.name,
+        phone:this.props.editObject.phone,
+        ridersRef:firebase.database().ref('RIDERS'),
         imagesrc:this.props.editObject.image,
-        loading:false
+        loading:false,
+        food:''
     }
 
     changeHandler = (e)=>{
@@ -45,7 +39,7 @@ class DialogUpdate extends Component{
             loading:true
         });
         let imagefile=e.target.files[0];
-        const filepath = `images/foods/${uuidv4()}.jpg`;
+        const filepath = `images/riders/${uuidv4()}.jpg`;
         const metadata = {contentType:mime.lookup(imagefile.name)};
         let task = firebase.storage().ref().child(filepath).put(imagefile,metadata);
         task
@@ -60,17 +54,16 @@ class DialogUpdate extends Component{
 
     formSubmitHandler = (e)=>{
         e.preventDefault();
-        const {foodname,foodprice,categoryname,imagesrc} = this.state;
-        this.state.foodRef
+        const {name,phone,imagesrc} = this.state;
+        this.state.ridersRef
             .child(this.props.editObject.id)
             .update({
-                name:foodname,
-                price:foodprice,
-                category:categoryname,
-                imageURI:imagesrc
+                name,
+                phone,
+                imageURI:imagesrc,
             })
             .then(()=>{
-                this.props.snackbarHandler("Item was updated successfully");
+                this.props.snackbarHandler("Rider was updated successfully");
                 this.props.dialogUpdateClose();
             })
             .catch(
@@ -87,14 +80,11 @@ class DialogUpdate extends Component{
         const {
             dialogUpdateOpen,
             dialogUpdateClose,
-            editObject
         } = this.props;
 
         const {
-            foodname,
-            foodprice,
-            categoryname,
-            categories,
+            name,
+            phone,
             loading,
             imagesrc
         } = this.state;
@@ -110,7 +100,7 @@ class DialogUpdate extends Component{
                 ):(
                     <>
 <div className="dialogTitleStyle">
-                <h2 className={styles.edithstyle}>Edit Food</h2>
+                <h2 className={styles.edithstyle}>Edit Deal</h2>
                 <IconButton onClick={dialogUpdateClose}>
                         <Cancel className={styles.delete} />
                 </IconButton>
@@ -120,45 +110,27 @@ class DialogUpdate extends Component{
 
                 <form className={styles.editDialogMargin} onSubmit={this.formSubmitHandler}>
                     
-                    <TextField
+                    <TextField 
                         label="Name"
                         variant="outlined"
+                        name="name"
                         type="text"
-                        name="foodname"
-                        value={foodname}
-                        autoFocus
-                        onChange={this.changeHandler}
-                        fullWidth
-                    />
-
-                    <TextField
-                        label="Price"
-                        variant="outlined"
-                        type="number"
-                        name="foodprice"
-                        value={foodprice}
-                        onChange={this.changeHandler}
+                        value={name}
                         required
+                        onChange={this.changeHandler}
                         fullWidth
                     />
 
-                    <FormControl fullWidth  required>
-                        <InputLabel>Select Category</InputLabel>
-                        <Select
-                            name="categoryname"
-                            value={categoryname}
-                            onChange={this.changeHandler}
-                        >
-                            {   
-                                categories.map((category,index)=>{
-                                    const {id,name} = category;
-                                    return(
-                                        <MenuItem key={index} value={name}>{name}</MenuItem>
-                                        )
-                                    })
-                            }
-                        </Select>
-                    </FormControl>
+                    <TextField 
+                        label="Phone"
+                        variant="outlined"
+                        name="phone"
+                        type="text"
+                        value={phone}
+                        required
+                        onChange={this.changeHandler}
+                        fullWidth
+                    />
 
                     <img
                         src={imagesrc}

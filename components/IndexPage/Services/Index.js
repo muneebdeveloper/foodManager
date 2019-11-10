@@ -40,6 +40,11 @@ const servicesData = [
         title:"Tags",
         image:"tags.jpg",
         link:"/tags"
+    },
+    {
+        title:"Riders",
+        image:"riderss.jpg",
+        link:"/riders"
     }
 ];
 

@@ -17,11 +17,11 @@ const DialogRemove = (props)=>{
 
 
    const itemRemoveHandler = (id)=>{
-        firebase.database().ref('CATEGORIES')
+        firebase.database().ref('RIDERS')
             .child(id)
             .remove()
             .then(()=>{
-                    props.snackbarHandler("Item was successfully removed");
+                    props.snackbarHandler("Rider was successfully removed");
                     props.dialogRemoveClose();
                 })
             .catch((err)=>props.errorDialogHandler())
@@ -31,7 +31,7 @@ const DialogRemove = (props)=>{
         <Dialog open={dialogRemoveOpen} onClose={()=>dialogRemoveClose()} >
 
             <div style={{padding:"16px 24px"}}>
-                <h2 className={styles.edithstyle}>Are you sure, you want to remove this stock item?</h2>
+                <h2 className={styles.edithstyle}>Are you sure, you want to remove this rider?</h2>
             </div>
 
             <DialogActions>
