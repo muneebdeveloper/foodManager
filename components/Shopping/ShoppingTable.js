@@ -21,6 +21,7 @@ const DealTable = (props)=>{
                 image,
                 description,
                 tags,
+                deliveryCharges,
                 editClickHandler,
                 removeClickHandler
             } = props;
@@ -32,9 +33,10 @@ const DealTable = (props)=>{
                     <td>{name}</td>
                     <td>{price}</td>
                     <td>{description}</td>
+                    <td>{deliveryCharges}</td>
                     <td>
                         {
-                            tags && tags.map((tag)=>`${tag}, `)
+                            tags && tags.map((tag)=>`${tag.name}, `)
                         }
                     </td>
                     <td style={{textAlign:"center"}}>
@@ -49,7 +51,7 @@ const DealTable = (props)=>{
                     <td style={{textAlign:"center"}}>
                         <IconButton 
                             size="small"
-                            onClick={()=>editClickHandler(id,name,price,description,tags,image)}
+                            onClick={()=>editClickHandler(id,name,price,description,deliveryCharges,tags,image)}
                         >
                             <Edit className={styles.edit} />
                         </IconButton>

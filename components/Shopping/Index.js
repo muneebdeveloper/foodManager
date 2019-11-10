@@ -317,6 +317,7 @@ class Shopping extends Component{
                                         <th>Name</th>
                                         <th>Price</th>
                                         <th>Description</th>
+                                        <th>Delivery Charges</th>
                                         <th>Tags</th>
                                         <th>Image</th>
                                         <th style={{minWidth:"81px"}}>Actions</th>
@@ -325,19 +326,20 @@ class Shopping extends Component{
                                 <tbody>
                                     {
                                         shoppingItems.map((shopping,index)=>{
-                                            const {id,name,price,description,tags,imageURI} = shopping;
+                                            const {id,name,price,description,deliveryCharges,tags,imageURI} = shopping;
                                             return(
                                                 <ShoppingTable
                                                     id={id}
                                                     key={index}
                                                     sr={index+1}
                                                     name={name}
+                                                    deliveryCharges={deliveryCharges}
                                                     description={description}
                                                     price={price}
                                                     image={imageURI}
                                                     tags={tags}
                                                     editClickHandler={
-                                                        async (id,name,price,description,tags,image)=>{
+                                                        async (id,name,price,description,deliveryCharges,tags,image)=>{
                                                             await this.setState({
                                                                 dialogUpdateOpen:true,
                                                                 editObject:{
@@ -345,6 +347,7 @@ class Shopping extends Component{
                                                                     name,
                                                                     price,
                                                                     description,
+                                                                    deliveryCharges,
                                                                     tags,
                                                                     image
                                                                 }
@@ -379,6 +382,7 @@ class Shopping extends Component{
                         dialogUpdateOpen={dialogUpdateOpen}
                         dialogUpdateClose={()=>this.setState({dialogUpdateOpen:false})}
                         editObject={editObject}
+                        tagsList={tagsList}
                         snackbarHandler={(message)=>this.snackbarHandler(message)}
                         errorDialogHandler={()=>this.errorDialogHandler}
                     />
