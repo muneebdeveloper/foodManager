@@ -7,7 +7,7 @@ const Title = ()=>{
     return(
         <>
             <h1 className={styles.title}>
-                Delicious Food with Foods Bag
+                Delicious Food with Food Bag
             </h1>
         </>
     );

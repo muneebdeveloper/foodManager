@@ -19,6 +19,7 @@ import styles from './index.css';
 class DialogUpdate extends Component{
 
     state={
+        name:this.props.editObject.name,
         price:this.props.editObject.price,
         foodData:[...this.props.editObject.foodItems],
         dealsRef:firebase.database().ref('DEALS'),
@@ -55,10 +56,11 @@ class DialogUpdate extends Component{
 
     formSubmitHandler = (e)=>{
         e.preventDefault();
-        const {price,foodData,imagesrc} = this.state;
+        const {name,price,foodData,imagesrc} = this.state;
         this.state.dealsRef
             .child(this.props.editObject.id)
             .update({
+                name,
                 price,
                 imageURI:imagesrc,
                 foodItems:[...foodData]
@@ -105,6 +107,7 @@ class DialogUpdate extends Component{
         } = this.props;
 
         const {
+            name,
             price,
             foodData,
             food,
@@ -132,7 +135,16 @@ class DialogUpdate extends Component{
             <DialogContent>
 
                 <form className={styles.editDialogMargin} onSubmit={this.formSubmitHandler}>
-                    
+                <TextField 
+                        label="Name"
+                        variant="outlined"
+                        name="name"
+                        type="text"
+                        value={name}
+                        required
+                        onChange={this.changeHandler}
+                        fullWidth
+                    />                    
                     <TextField 
                         label="Price"
                         variant="outlined"

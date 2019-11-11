@@ -6,6 +6,10 @@ import SnackBar from '../misc/snackbar/Snackbar';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import FormControl from '@material-ui/core/FormControl';
+import InputLabel from '@material-ui/core/InputLabel';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
 
 import TagsTable from './TagsTable';
 import DialogUpdate from './DialogUpdate';
@@ -21,6 +25,8 @@ class Tags extends Component{
     state={
         tagname:'',
         tags:[],
+        prior:'',
+        priorities:['HIGH','NORMAL','LOW'],
         snackbar:false,
         errorDialog:false,
         errorMessage:'',
@@ -108,7 +114,7 @@ class Tags extends Component{
 
         e.preventDefault();
 
-        const {tagname} = this.state;
+        const {tagname,prior} = this.state;
     
             const key = this.state.tagsRef.push().key;
             this.state.tagsRef
@@ -116,10 +122,12 @@ class Tags extends Component{
             .set({
                 id:key,
                 name:tagname,
+                priority:prior
             }).then(
                 ()=>{
                     this.setState({
                         tagname:'',
+                        prior:''
                     });
                     this.snackbarHandler("Tag was successfully added");
                 }
@@ -154,6 +162,8 @@ class Tags extends Component{
 
             tagname,
             tags,
+            priorities,
+            prior,
             snackbar,
             errorDialog,
             errorMessage,
@@ -191,7 +201,24 @@ class Tags extends Component{
                                     fullWidth
                                 />
                 
-                                
+                                <FormControl fullWidth  required>
+                                    <InputLabel>Select Priority</InputLabel>
+                                    <Select
+                                        name="prior"
+                                        value={prior}
+                                        onChange={this.changeHandler}
+                                    >
+                                        {   
+                                            priorities.map((priority,index)=>{
+                                                
+                                                return(
+                                                    <MenuItem key={index} value={priority}>{priority}</MenuItem>
+                                                    )
+                                            })
+                                        }
+                                        </Select>
+                                </FormControl>
+
                                     <Button 
                                         variant="contained"
                                         type="submit"
@@ -213,26 +240,29 @@ class Tags extends Component{
                                     <tr>
                                         <th>Sr#</th>
                                         <th>Name</th>
+                                        <th>Priority</th>
                                         <th style={{minWidth:"81px"}}>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {
-                                        tags.map((category,index)=>{
-                                            const {id,name} = category;
+                                        tags.map((tag,index)=>{
+                                            const {id,name,priority} = tag;
                                             return(
                                                 <TagsTable
                                                     id={id}
                                                     key={index}
                                                     sr={index+1}
                                                     name={name}
+                                                    priority={priority}
                                                     editClickHandler={
-                                                        async (id,name)=>{
+                                                        async (id,name,priority)=>{
                                                             await this.setState({
                                                                 dialogUpdateOpen:true,
                                                                 editObject:{
                                                                     id,
                                                                     name,
+                                                                    priority
                                                                 }
                                                             })
                                                         }
@@ -265,6 +295,7 @@ class Tags extends Component{
                         dialogUpdateOpen={dialogUpdateOpen}
                         dialogUpdateClose={()=>this.setState({dialogUpdateOpen:false})}
                         tags={tags}
+                        priorities={priorities}
                         editObject={editObject}
                         snackbarHandler={(message)=>this.snackbarHandler(message)}
                         errorDialogHandler={()=>this.errorDialogHandler}

@@ -6,20 +6,44 @@ import DialogContent from '@material-ui/core/DialogContent';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
+import 'date-fns';
+import DateFnsUtils from '@date-io/date-fns';
+import {
+    MuiPickersUtilsProvider,
+    KeyboardTimePicker,
+  } from '@material-ui/pickers';
 
 import Cancel from '@material-ui/icons/Cancel';
 
 
 import styles from './index.css';
 
+const convertTime12to24 = (time12h) => {
+    const [time, modifier] = time12h.split(' ');
+  
+    let [hours, minutes] = time.split(':');
+  
+    if (hours === '12') {
+      hours = '00';
+    }
+  
+    if (modifier === 'PM') {
+      hours = parseInt(hours, 10) + 12;
+    }
+    if(hours<10){
+        return `0${hours}:${minutes}`
+    }
+    return `${hours}:${minutes}`;
+  }
 
 class DialogUpdate extends Component{
 
     state={
         name:this.props.editObject.name,
         address:this.props.editObject.address,
-        openingTime:this.props.editObject.openingTime,
-        closingTime:this.props.editObject.closingTime,
+        phone:this.props.editObject.phone,
+        openingTime:new Date(`2014-08-18T${convertTime12to24(this.props.editObject.openingTime)}`),
+        closingTime:new Date(`2014-08-18T${convertTime12to24(this.props.editObject.closingTime)}`),
         deliveryCharges:this.props.editObject.deliveryCharges,
         restaurantRef:firebase.database().ref('RESTAURANTS')
     }
@@ -31,17 +55,22 @@ class DialogUpdate extends Component{
         });
 
     }
-
+    handleDateChange = (date,name) => {
+        this.setState({
+            [name]:date
+        })
+      };
     formSubmitHandler = (e)=>{
         e.preventDefault();
-        const {name,address,openingTime,closingTime,deliveryCharges} = this.state;
+        const {name,address,phone,openingTime,closingTime,deliveryCharges} = this.state;
         this.state.restaurantRef
             .child(this.props.editObject.id)
             .update({
                 name,
                 address,
-                openingTime,
-                closingTime,
+                phone,
+                openingTime:openingTime.toLocaleTimeString('en-US', { hour: 'numeric', hour12: true, minute: 'numeric' }),
+                closingTime:closingTime.toLocaleTimeString('en-US', { hour: 'numeric', hour12: true, minute: 'numeric' }),
                 deliveryCharges
             })
             .then(()=>{
@@ -67,6 +96,7 @@ class DialogUpdate extends Component{
         const {
             name,
             address,
+            phone,
             closingTime,
             openingTime,
             deliveryCharges
@@ -111,27 +141,43 @@ class DialogUpdate extends Component{
                                     onChange={this.changeHandler}
                                     fullWidth
                     />
-
-                    <TextField
-                                    label="Opening Time"
-                                    type="text"
+                                <TextField 
+                                    label="Phone"
                                     variant="outlined"
-                                    name="openingTime"
-                                    value={openingTime}
-                                    onChange={this.changeHandler}
+                                    name="phone"
+                                    type="text"
+                                    value={phone}
                                     required
-                    />
-
-                                <TextField
-                                    label="Closing Time"
-                                    type="text"
-                                    variant="outlined"
+                                    onChange={this.changeHandler}
                                     fullWidth
-                                    name="closingTime"
-                                    value={closingTime}
-                                    onChange={this.changeHandler}
-                                    required
                                 />
+                                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+
+                                    <KeyboardTimePicker
+                                        margin="normal"
+                                        id="time-picker"
+                                        fullWidth
+                                        label="Opening Time"
+                                        value={openingTime}
+                                        onChange={(date)=>this.handleDateChange(date,"openingTime")}
+                                            KeyboardButtonProps={{
+                                                'aria-label': 'change time',
+                                        }}
+                                    />
+
+                                    <KeyboardTimePicker
+                                        margin="normal"
+                                        id="time-picker"
+                                        fullWidth
+                                        label="Closing Time"
+                                        value={closingTime}
+                                        onChange={(date)=>this.handleDateChange(date,"closingTime")}
+                                            KeyboardButtonProps={{
+                                                'aria-label': 'change time',
+                                        }}
+                                    />
+
+                                    </MuiPickersUtilsProvider>
 
                                 <TextField
                                     label="Delivery Charges"

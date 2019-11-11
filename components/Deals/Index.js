@@ -20,6 +20,7 @@ import styles from './index.css';
 class Deals extends Component{
 
     state={
+        name:'',
         price:'',
         food:'',
         foodData:[],
@@ -105,7 +106,7 @@ class Deals extends Component{
 
         e.preventDefault();
 
-        const {price,foodData,imagefile} = this.state;
+        const {name,price,foodData,imagefile} = this.state;
         this.setState({
             loadingFormProgress:true
         })
@@ -120,6 +121,7 @@ class Deals extends Component{
             .child(key)
             .set({
                 id:key,
+                name,
                 price,
                 imageURI:url,
                 foodItems:[...foodData]
@@ -190,6 +192,7 @@ class Deals extends Component{
 
     render(){
         const {
+            name,
             price,
             food,
             foodData,
@@ -219,6 +222,16 @@ class Deals extends Component{
                             ):(
                             <div className="mainFormStyle">
             
+                            <TextField 
+                                    label="Name"
+                                    variant="outlined"
+                                    name="name"
+                                    type="text"
+                                    value={name}
+                                    required
+                                    onChange={this.changeHandler}
+                                    fullWidth
+                                />
 
                                 <TextField 
                                     label="Price"
@@ -290,6 +303,7 @@ class Deals extends Component{
                                 <thead>
                                     <tr>
                                         <th>Sr#</th>
+                                        <th>Name</th>
                                         <th>Price</th>
                                         <th>Food Items</th>
                                         <th>Image</th>
@@ -299,21 +313,23 @@ class Deals extends Component{
                                 <tbody>
                                     {
                                         deals.map((deal,index)=>{
-                                            const {id,price,foodItems,imageURI} = deal;
+                                            const {id,name,price,foodItems,imageURI} = deal;
                                             return(
                                                 <DealsTable
                                                     id={id}
                                                     key={index}
                                                     sr={index+1}
+                                                    name={name}
                                                     price={price}
                                                     image={imageURI}
                                                     foodItems={foodItems}
                                                     editClickHandler={
-                                                        async (id,price,foodItems,image)=>{
+                                                        async (id,name,price,foodItems,image)=>{
                                                             await this.setState({
                                                                 dialogUpdateOpen:true,
                                                                 editObject:{
                                                                     id,
+                                                                    name,
                                                                     price,
                                                                     foodItems,
                                                                     image

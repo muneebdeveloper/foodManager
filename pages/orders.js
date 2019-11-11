@@ -1,4 +1,4 @@
-import Orders from '../components/Food/Index.js';
+import Orders from '../components/Orders/Index.js';
 
 
 const Orderspage = ()=>{
@@ -7,4 +7,4 @@ const Orderspage = ()=>{
   )
 }
 
-export default Foodpage;
+export default Orderspage;

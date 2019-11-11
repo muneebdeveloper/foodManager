@@ -6,6 +6,10 @@ import DialogContent from '@material-ui/core/DialogContent';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
+import FormControl from '@material-ui/core/FormControl';
+import InputLabel from '@material-ui/core/InputLabel';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
 
 import Cancel from '@material-ui/icons/Cancel';
 
@@ -17,6 +21,7 @@ class DialogUpdate extends Component{
 
     state={
         tagname:this.props.editObject.name,
+        prior:this.props.editObject.priority,
         tagsRef:firebase.database().ref('TAGS')
     }
 
@@ -30,11 +35,12 @@ class DialogUpdate extends Component{
 
     formSubmitHandler = (e)=>{
         e.preventDefault();
-        const {tagname} = this.state;
+        const {tagname,prior} = this.state;
         this.state.tagsRef
             .child(this.props.editObject.id)
             .update({
-                name:tagname
+                name:tagname,
+                priority:prior
             })
             .then(()=>{
                 this.props.snackbarHandler("Tag was updated successfully");
@@ -58,6 +64,7 @@ class DialogUpdate extends Component{
 
         const {
             tagname,
+            prior
         } = this.state;
 
         return(
@@ -88,7 +95,23 @@ class DialogUpdate extends Component{
                         onChange={this.changeHandler}
                         fullWidth
                     />
-
+                                <FormControl fullWidth  required>
+                                    <InputLabel>Select Priority</InputLabel>
+                                    <Select
+                                        name="prior"
+                                        value={prior}
+                                        onChange={this.changeHandler}
+                                    >
+                                        {   
+                                            this.props.priorities.map((priority,index)=>{
+                                                
+                                                return(
+                                                    <MenuItem key={index} value={priority}>{priority}</MenuItem>
+                                                    )
+                                            })
+                                        }
+                                        </Select>
+                                </FormControl>
                     <Button 
                         type="submit"
                         variant="contained"

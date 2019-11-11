@@ -13,6 +13,7 @@ const TagsTable = (props)=>{
                 id,
                 sr,
                 name,
+                priority,
                 editClickHandler,
                 removeClickHandler
             } = props;
@@ -22,10 +23,11 @@ const TagsTable = (props)=>{
                 <tr>
                     <td>{sr}</td>
                     <td>{name}</td>
+                    <td>{priority}</td>
                     <td style={{textAlign:"center"}}>
                         <IconButton 
                             size="small"
-                            onClick={()=>editClickHandler(id,name)}
+                            onClick={()=>editClickHandler(id,name,priority)}
                         >
                             <Edit className={styles.edit} />
                         </IconButton>

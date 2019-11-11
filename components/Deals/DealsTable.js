@@ -16,6 +16,7 @@ const DealTable = (props)=>{
         const {
                 id,
                 sr,
+                name,
                 price,
                 image,
                 foodItems,
@@ -27,6 +28,7 @@ const DealTable = (props)=>{
             <>
                 <tr>
                     <td>{sr}</td>
+                    <td>{name}</td>
                     <td>{price}</td>
                     <td>
                         {
@@ -45,7 +47,7 @@ const DealTable = (props)=>{
                     <td style={{textAlign:"center"}}>
                         <IconButton 
                             size="small"
-                            onClick={()=>editClickHandler(id,price,foodItems,image)}
+                            onClick={()=>editClickHandler(id,name,price,foodItems,image)}
                         >
                             <Edit className={styles.edit} />
                         </IconButton>

@@ -6,6 +6,12 @@ import SnackBar from '../misc/snackbar/Snackbar';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import 'date-fns';
+import DateFnsUtils from '@date-io/date-fns';
+import {
+    MuiPickersUtilsProvider,
+    KeyboardTimePicker,
+  } from '@material-ui/pickers';
 
 import RestaurantTable from './RestaurantTable';
 import DialogUpdate from './DialogUpdate';
@@ -21,8 +27,9 @@ class Category extends Component{
     state={
         name:'',
         address:'',
-        openingTime:'',
-        closingTime:'',
+        phone:'',
+        openingTime:new Date(),
+        closingTime:new Date(),
         deliveryCharges:'',
         restaurants:[],
         snackbar:false,
@@ -107,12 +114,16 @@ class Category extends Component{
             });
         })
     }
-
+    handleDateChange = (date,name) => {
+        this.setState({
+            [name]:date
+        })
+      };
     formSubmitHandler = (e)=>{
 
         e.preventDefault();
 
-        const {name,address,openingTime,closingTime,deliveryCharges} = this.state;
+        const {name,address,phone,openingTime,closingTime,deliveryCharges} = this.state;
     
             const key = this.state.restaurantRef.push().key;
             this.state.restaurantRef
@@ -121,16 +132,18 @@ class Category extends Component{
                 id:key,
                 name,
                 address,
-                openingTime,
-                closingTime,
+                phone,
+                openingTime:openingTime.toLocaleTimeString('en-US', { hour: 'numeric', hour12: true, minute: 'numeric' }),
+                closingTime:closingTime.toLocaleTimeString('en-US', { hour: 'numeric', hour12: true, minute: 'numeric' }),
                 deliveryCharges
             }).then(
                 ()=>{
                     this.setState({
                         name:'',
+                        phone:'',
                         address:'',
-                        openingTime:'',
-                        closingTime:'',
+                        openingTime:new Date(),
+                        closingTime:new Date(),
                         deliveryCharges:''
                     });
                     this.snackbarHandler("Restaurant was successfully added");
@@ -166,6 +179,7 @@ class Category extends Component{
 
             name,
             address,
+            phone,
             openingTime,
             closingTime,
             deliveryCharges,
@@ -217,27 +231,44 @@ class Category extends Component{
                                     fullWidth
                                 />
 
-                                    <TextField
-                                        label="Opening Time"
-                                        type="text"
-                                        name="openingTime"
+                                <TextField 
+                                    label="Phone"
+                                    variant="outlined"
+                                    name="phone"
+                                    type="text"
+                                    value={phone}
+                                    required
+                                    onChange={this.changeHandler}
+                                    fullWidth
+                                />
+
+                                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+
+                                    <KeyboardTimePicker
+                                        margin="normal"
+                                        id="time-picker"
                                         fullWidth
+                                        label="Opening Time"
                                         value={openingTime}
-                                        onChange={this.changeHandler}
-                                        required
-                                        variant="outlined"
+                                        onChange={(date)=>this.handleDateChange(date,"openingTime")}
+                                            KeyboardButtonProps={{
+                                                'aria-label': 'change time',
+                                        }}
                                     />
 
-                                <TextField
-                                    label="Closing Time"
-                                    type="text"
-                                    variant="outlined"
-                                    fullWidth
-                                    name="closingTime"
-                                    value={closingTime}
-                                    onChange={this.changeHandler}
-                                    required
-                                />
+                                    <KeyboardTimePicker
+                                        margin="normal"
+                                        id="time-picker"
+                                        fullWidth
+                                        label="Closing Time"
+                                        value={closingTime}
+                                        onChange={(date)=>this.handleDateChange(date,"closingTime")}
+                                            KeyboardButtonProps={{
+                                                'aria-label': 'change time',
+                                        }}
+                                    />
+
+                                </MuiPickersUtilsProvider>
 
                                 <TextField 
                                     label="Delivery Charges"
@@ -272,6 +303,7 @@ class Category extends Component{
                                         <th>Sr#</th>
                                         <th>Name</th>
                                         <th>Address</th>
+                                        <th>Phone</th>
                                         <th>Opening Time</th>
                                         <th>Closing Time</th>
                                         <th>Delivery Charges</th>
@@ -281,7 +313,7 @@ class Category extends Component{
                                 <tbody>
                                     {
                                         restaurants.map((restaurant,index)=>{
-                                            const {id,name,address,openingTime,closingTime,deliveryCharges} = restaurant;
+                                            const {id,name,address,phone,openingTime,closingTime,deliveryCharges} = restaurant;
                                             return(
                                                 <RestaurantTable
                                                     id={id}
@@ -289,17 +321,19 @@ class Category extends Component{
                                                     sr={index+1}
                                                     name={name}
                                                     address={address}
+                                                    phone={phone}
                                                     openingTime={openingTime}
                                                     closingTime={closingTime}
                                                     deliveryCharges={deliveryCharges}
                                                     editClickHandler={
-                                                        async (id,name,address,openingTime,closingTime,deliveryCharges)=>{
+                                                        async (id,name,address,phone,openingTime,closingTime,deliveryCharges)=>{
                                                             await this.setState({
                                                                 dialogUpdateOpen:true,
                                                                 editObject:{
                                                                     id,
                                                                     name,
                                                                     address,
+                                                                    phone,
                                                                     openingTime,
                                                                     closingTime,
                                                                     deliveryCharges

@@ -9,7 +9,7 @@ const Logo = ()=>{
         <h2 className={styles.logoH2}>
             <Link href="/">
                 <a className={styles.logoa}>
-                    Foods
+                    Food
                     <strong className={styles.logostrong}>Bag</strong>
                 </a>
             </Link>

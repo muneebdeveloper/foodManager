@@ -28,6 +28,7 @@ class Food extends Component{
     state={
         name:'',
         price:'',
+        deliveryCharges:'',
         restaurantID:'',
         restaurantRemoveID:'',
         food:[],
@@ -83,7 +84,10 @@ class Food extends Component{
             let restaurant = loadedRestaurants.find((restaurant)=>{
                 return restaurant.id == requiredObject.restaurantID;
             });
-            loadedFood.push({...requiredObject,restaurantName:restaurant.name,restaurantID:restaurant.id});
+            if(restaurant){
+                loadedFood.push({...requiredObject,restaurantName:restaurant.name,restaurantID:restaurant.id});
+            }
+            
             this.setState({
                 food:[...loadedFood],
                 loadingTableProgress:false
@@ -120,7 +124,7 @@ class Food extends Component{
         this.state.foodRef.on('child_changed',snap=>{
             loadedItem=snap.val();
             let restaurant = this.state.restaurants.find((restaurant)=>{
-                return restaurant.id===loadedItem.restaurant; 
+                return restaurant.id===loadedItem.restaurantID; 
             });
             this.setState((state)=>{
                 let index = state.food.findIndex((el)=>{
@@ -142,7 +146,7 @@ class Food extends Component{
 
         e.preventDefault();
 
-        const {name,price,restaurantID,imagefile} = this.state;
+        const {name,price,deliveryCharges,restaurantID,imagefile} = this.state;
         this.setState({
             loadingFormProgress:true
         })
@@ -160,6 +164,7 @@ class Food extends Component{
                 id:key,
                 name,
                 price,
+                deliveryCharges,
                 restaurantID,
                 count:0,
                 restaurant:"null",
@@ -177,6 +182,7 @@ class Food extends Component{
                         name:'',
                         price:'',
                         imagefile:'',
+                        deliveryCharges:'',
                         restaurantID:'',
                         loadingFormProgress:false
                     });
@@ -215,6 +221,7 @@ class Food extends Component{
         const {
             name,
             price,
+            deliveryCharges,
             restaurantID,
             restaurantRemoveID,
             food,
@@ -261,6 +268,16 @@ class Food extends Component{
                                     name="price"
                                     type="number"
                                     value={price}
+                                    onChange={this.changeHandler}
+                                    fullWidth
+                            />
+
+                            <TextField 
+                                    label="Delivery Charges"
+                                    variant="outlined"
+                                    name="deliveryCharges"
+                                    type="number"
+                                    value={deliveryCharges}
                                     onChange={this.changeHandler}
                                     fullWidth
                             />
@@ -316,6 +333,7 @@ class Food extends Component{
                                         <th>Name</th>
                                         <th>Price</th>
                                         <th>Restaurant</th>
+                                        <th>Delivery Charges</th>
                                         <th>Image</th>
                                         <th style={{minWidth:"81px"}}>Actions</th>
                                     </tr>
@@ -323,7 +341,7 @@ class Food extends Component{
                                 <tbody>
                                     {
                                         food.map((offer,index)=>{
-                                            const {id,name,price,restaurantName,restaurantID,imageURI} = offer;
+                                            const {id,name,price,deliveryCharges,restaurantName,restaurantID,imageURI} = offer;
                                             return(
                                                 <FoodTable
                                                     id={id}
@@ -331,17 +349,19 @@ class Food extends Component{
                                                     sr={index+1}
                                                     name={name}
                                                     price={price}
+                                                    deliveryCharges={deliveryCharges}
                                                     restaurant={restaurantName}
                                                     restaurantID={restaurantID}
                                                     image={imageURI}
                                                     editClickHandler={
-                                                        async (id,name,price,restaurantID,image)=>{
+                                                        async (id,name,price,deliveryCharges,restaurantID,image)=>{
                                                             await this.setState({
                                                                 dialogUpdateOpen:true,
                                                                 editObject:{
                                                                     id,
                                                                     name,
                                                                     price,
+                                                                    deliveryCharges,
                                                                     restaurantID,
                                                                     image,
                                                                 }

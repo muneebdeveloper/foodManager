@@ -24,10 +24,11 @@ class DialogUpdate extends Component{
 
     state={
         name:this.props.editObject.name,
-        discountedPrice:this.props.editObject.discountedPrice,
-        originalPrice:this.props.editObject.originalPrice,
+        price:this.props.editObject.price,
+        deliveryCharges:this.props.editObject.deliveryCharges,
         restaurantID:this.props.editObject.restaurantID,
-        offersRef:firebase.database().ref('OFFERS'),
+        previousRestaurant:this.props.editObject.restaurantID,
+        foodRef:firebase.database().ref('FOOD'),
         imagesrc:this.props.editObject.image,
         loading:false
     }
@@ -47,7 +48,7 @@ class DialogUpdate extends Component{
             loading:true
         });
         let imagefile=e.target.files[0];
-        const filepath = `images/offers/${uuidv4()}.jpg`;
+        const filepath = `images/food/${uuidv4()}.jpg`;
         const metadata = {contentType:mime.lookup(imagefile.name)};
         let task = firebase.storage().ref().child(filepath).put(imagefile,metadata);
         task
@@ -62,18 +63,36 @@ class DialogUpdate extends Component{
 
     formSubmitHandler = (e)=>{
         e.preventDefault();
-        const {name,originalPrice,discountedPrice,restaurantID,imagesrc} = this.state;
-        this.state.offersRef
+        const {name,price,deliveryCharges,restaurantID,previousRestaurant,imagesrc} = this.state;
+        this.state.foodRef
             .child(this.props.editObject.id)
             .update({
                 name,
-                originalPrice,
-                discountedPrice,
-                restaurant:restaurantID,
+                price,
+                deliveryCharges,
+                restaurantID,
                 imageURI:imagesrc
             })
             .then(()=>{
-                this.props.snackbarHandler("Offer was updated successfully");
+                let valueObject;
+                firebase.database().ref("RESTAURANTS").child(restaurantID).once("value",(snap)=>{
+                    valueObject = snap.val();
+                });
+                
+                firebase.database().ref("RESTAURANTS").child(restaurantID).update({
+                    ...(valueObject.foodItems ? {foodItems:[...valueObject.foodItems,this.props.editObject.id]}:{foodItems:[this.props.editObject.id]})
+                });
+
+                firebase.database().ref("RESTAURANTS").child(previousRestaurant).once("value",(snap)=>{
+                    valueObject = snap.val().foodItems;
+                });
+                
+                let foundIndex = valueObject.findIndex((el)=>el==this.props.editObject.id);
+                valueObject.splice(foundIndex,1);
+                firebase.database().ref("RESTAURANTS").child(previousRestaurant).update({
+                    foodItems:[...valueObject]
+                });
+                this.props.snackbarHandler("Food was updated successfully");
                 this.props.dialogUpdateClose();
             })
             .catch(
@@ -95,8 +114,8 @@ class DialogUpdate extends Component{
 
         const {
             name,
-            discountedPrice,
-            originalPrice,
+            price,
+            deliveryCharges,
             restaurantID,
             loading,
             imagesrc
@@ -134,6 +153,16 @@ class DialogUpdate extends Component{
                                     fullWidth
                 />
 
+                <TextField 
+                                    label="Price"
+                                    variant="outlined"
+                                    name="price"
+                                    type="text"
+                                    value={price}
+                                    onChange={this.changeHandler}
+                                    fullWidth
+                />
+
                 <FormControl fullWidth  required>
                                     <InputLabel>Select Restaurant</InputLabel>
                                     <Select
@@ -149,28 +178,18 @@ class DialogUpdate extends Component{
                                                     )
                                             })
                                         }
-                                        </Select>
+                                    </Select>
                 </FormControl>
 
                 <TextField 
-                                    label="Original Price"
+                                    label="Delivery Charges"
                                     variant="outlined"
-                                    name="originalPrice"
+                                    name="deliveryCharges"
                                     type="number"
-                                    value={originalPrice}
+                                    value={deliveryCharges}
                                     onChange={this.changeHandler}
                                     fullWidth
                 />
-
-                <TextField 
-                                    label="Discounted Price"
-                                    variant="outlined"
-                                    name="discountedPrice"
-                                    type="number"
-                                    value={discountedPrice}
-                                    onChange={this.changeHandler}
-                                    fullWidth
-                                />
 
                     <img
                         src={imagesrc}

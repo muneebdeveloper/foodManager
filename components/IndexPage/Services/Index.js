@@ -32,20 +32,30 @@ const servicesData = [
         link:"/deals"
     },
     {
-        title:"Shopping",
-        image:"shopping.jpg",
-        link:"/shopping"
-    },
-    {
         title:"Tags",
         image:"tags.jpg",
         link:"/tags"
     },
     {
+        title:"Shopping",
+        image:"shopping.jpg",
+        link:"/shopping"
+    },
+    {
         title:"Riders",
-        image:"riderss.jpg",
+        image:"riders.jpg",
         link:"/riders"
-    }
+    },
+    {
+        title:"Orders",
+        image:"orders.jpg",
+        link:"/orders"
+    },
+    // {
+    //     title:"Report",
+    //     image:"report.jpg",
+    //     link:"/report"
+    // }
 ];
 
 const Services = ()=>{

@@ -14,6 +14,7 @@ const CategoryTable = (props)=>{
                 sr,
                 name,
                 address,
+                phone,
                 openingTime,
                 closingTime,
                 deliveryCharges,
@@ -27,13 +28,14 @@ const CategoryTable = (props)=>{
                     <td>{sr}</td>
                     <td>{name}</td>
                     <td>{address}</td>
+                    <td>{phone}</td>
                     <td>{openingTime}</td>
                     <td>{closingTime}</td>
                     <td>{deliveryCharges}</td>
                     <td style={{textAlign:"center"}}>
                         <IconButton 
                             size="small"
-                            onClick={()=>editClickHandler(id,name,address,openingTime,closingTime,deliveryCharges)}
+                            onClick={()=>editClickHandler(id,name,address,phone,openingTime,closingTime,deliveryCharges)}
                         >
                             <Edit className={styles.edit} />
                         </IconButton>

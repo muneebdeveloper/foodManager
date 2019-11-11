@@ -19,6 +19,7 @@ const FoodTable = (props)=>{
                 sr,
                 name,
                 price,
+                deliveryCharges,
                 restaurant,
                 restaurantID,
                 image,
@@ -32,6 +33,7 @@ const FoodTable = (props)=>{
                 <td>{name}</td>
                 <td>{price}</td>
                 <td>{restaurant}</td>
+                <td>{deliveryCharges}</td>
                 <td style={{textAlign:"center"}}>
                     <Button
                         size="small"
@@ -44,7 +46,7 @@ const FoodTable = (props)=>{
                 <td style={{textAlign:"center"}}>
                     <IconButton 
                         size="small"
-                        onClick={()=>editClickHandler(id,name,price,restaurantID,image)}
+                        onClick={()=>editClickHandler(id,name,price,deliveryCharges,restaurantID,image)}
                     >
                         <Edit className={styles.edit} />
                     </IconButton>
