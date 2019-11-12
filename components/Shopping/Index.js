@@ -16,8 +16,6 @@ import DialogRemove from './DialogRemove';
 import styles from './index.css';
 
 
-let loadedShopping=[];
-
 class Shopping extends Component{
 
     state={
@@ -50,6 +48,7 @@ class Shopping extends Component{
     }
 
     componentDidMount(){
+        let loadedShopping=[];
         let loadedTags = [];
         firebase.database().ref('TAGS').on('child_added',snap=>{
             loadedTags.push(snap.val());
@@ -67,11 +66,11 @@ class Shopping extends Component{
             })
         });
         
-        this.removeShoppingListener();
-        this.updateShoppingListener();
+        this.removeShoppingListener(loadedShopping);
+        this.updateShoppingListener(loadedShopping);
     }
 
-    removeShoppingListener = ()=>{
+    removeShoppingListener = (loadedShopping)=>{
         let loadedItem = {};
 
         this.state.shoppingRef.on('child_removed',snap=>{
@@ -92,7 +91,7 @@ class Shopping extends Component{
         })
     }
 
-    updateShoppingListener = ()=>{
+    updateShoppingListener = (loadedShopping)=>{
         let loadedItem = {};
         this.state.shoppingRef.on('child_changed',snap=>{
             loadedItem=snap.val();
@@ -132,9 +131,9 @@ class Shopping extends Component{
             .set({
                 id:key,
                 name,
-                price,
+                price:Number(price),
                 description,
-                deliveryCharges,
+                deliveryCharges:Number(deliveryCharges),
                 imageURI:url,
                 tags:[...tags]
             }).then(

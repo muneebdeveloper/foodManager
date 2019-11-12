@@ -21,8 +21,6 @@ import DialogRemove from './DialogRemove';
 import styles from './index.css';
 
 
-let loadedOffers=[];
-
 class Offers extends Component{
 
     state={
@@ -64,6 +62,7 @@ class Offers extends Component{
 
     componentDidMount(){
 
+        let loadedOffers=[];
         let loadedRestaurants = [];
 
         firebase.database().ref("RESTAURANTS").on('child_added',snap=>{
@@ -82,18 +81,20 @@ class Offers extends Component{
             let restaurant = loadedRestaurants.find((restaurant)=>{
                 return restaurant.id == requiredObject.restaurant;
             });
-            loadedOffers.push({...requiredObject,restaurantName:restaurant.name,restaurantID:restaurant.id});
+            if(restaurant){
+                loadedOffers.push({...requiredObject,restaurantName:restaurant.name,restaurantID:restaurant.id});
+            }
             this.setState({
                 offers:[...loadedOffers],
                 loadingTableProgress:false
             })
         });
 
-        this.removeOffersListener();
-        this.updateOffersListener();
+        this.removeOffersListener(loadedOffers);
+        this.updateOffersListener(loadedOffers);
     }
 
-    removeOffersListener = ()=>{
+    removeOffersListener = (loadedOffers)=>{
         let loadedItem = {};
 
         this.state.offersRef.on('child_removed',snap=>{
@@ -114,7 +115,7 @@ class Offers extends Component{
         })
     }
 
-    updateOffersListener = ()=>{
+    updateOffersListener = (loadedOffers)=>{
         let loadedItem = {};
         this.state.offersRef.on('child_changed',snap=>{
             loadedItem=snap.val();
@@ -159,8 +160,8 @@ class Offers extends Component{
                 id:key,
                 name,
                 restaurant:restaurantID,
-                originalPrice,
-                discountedPrice,
+                originalPrice:Number(originalPrice),
+                discountedPrice:Number(discountedPrice),
                 imageURI:url,
             }).then(
                 ()=>{

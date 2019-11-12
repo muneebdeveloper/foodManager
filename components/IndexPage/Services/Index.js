@@ -51,11 +51,11 @@ const servicesData = [
         image:"orders.jpg",
         link:"/orders"
     },
-    // {
-    //     title:"Report",
-    //     image:"report.jpg",
-    //     link:"/report"
-    // }
+    {
+        title:"Report",
+        image:"report.jpg",
+        link:"/report"
+    }
 ];
 
 const Services = ()=>{

@@ -68,8 +68,8 @@ class DialogUpdate extends Component{
             .child(this.props.editObject.id)
             .update({
                 name,
-                price,
-                deliveryCharges,
+                price:Number(price),
+                deliveryCharges:Number(deliveryCharges),
                 restaurantID,
                 imageURI:imagesrc
             })

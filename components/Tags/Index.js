@@ -18,8 +18,6 @@ import DialogRemove from './DialogRemove';
 import styles from './index.css';
 
 
-
-  let loadedTags=[];
 class Tags extends Component{
 
     state={
@@ -50,7 +48,7 @@ class Tags extends Component{
 
     componentDidMount(){
         
-
+        let loadedTags=[];
         this.state.tagsRef.on('child_added',snap=>{
             this.setState({
                 loadingTableProgress:true
@@ -65,11 +63,11 @@ class Tags extends Component{
 
     
 
-        this.removeTagsListener();
-        this.updateTagsListener();
+        this.removeTagsListener(loadedTags);
+        this.updateTagsListener(loadedTags);
     }
 
-    removeTagsListener = ()=>{
+    removeTagsListener = (loadedTags)=>{
         let loadedItem = {};
 
         this.state.tagsRef.on('child_removed',snap=>{
@@ -90,7 +88,7 @@ class Tags extends Component{
         })
     }
 
-    updateTagsListener = ()=>{
+    updateTagsListener = (loadedTags)=>{
         let loadedItem = {};
         this.state.tagsRef.on('child_changed',snap=>{
             loadedItem=snap.val();

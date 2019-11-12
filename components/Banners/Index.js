@@ -19,7 +19,7 @@ import DialogRemove from './DialogRemove';
 import styles from './index.css';
 
 
-let loadedBanners=[];
+
 
 class Banners extends Component{
 
@@ -63,7 +63,7 @@ class Banners extends Component{
 
     componentDidMount(){
         
-
+        let loadedBanners=[];
         this.state.bannersRef.on('child_added',snap=>{
             this.setState({
                 loadingTableProgress:true
@@ -78,11 +78,11 @@ class Banners extends Component{
 
     
 
-        this.removeBannersListener();
-        this.updateBannersListener();
+        this.removeBannersListener(loadedBanners);
+        this.updateBannersListener(loadedBanners);
     }
 
-    removeBannersListener = ()=>{
+    removeBannersListener = (loadedBanners)=>{
         let loadedItem = {};
 
         this.state.bannersRef.on('child_removed',snap=>{
@@ -103,7 +103,7 @@ class Banners extends Component{
         })
     }
 
-    updateBannersListener = ()=>{
+    updateBannersListener = (loadedBanners)=>{
         let loadedItem = {};
         this.state.bannersRef.on('child_changed',snap=>{
             loadedItem=snap.val();

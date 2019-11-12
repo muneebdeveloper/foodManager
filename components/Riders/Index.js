@@ -15,8 +15,6 @@ import DialogRemove from './DialogRemove';
 import styles from './index.css';
 
 
-let loadedRiders=[];
-
 class Riders extends Component{
 
     state={
@@ -47,7 +45,7 @@ class Riders extends Component{
 
     componentDidMount(){
         
-
+        let loadedRiders=[];
         this.state.ridersRef.on('child_added',snap=>{
             loadedRiders.push(snap.val());
             this.setState({
@@ -56,11 +54,11 @@ class Riders extends Component{
             })
         });
         
-        this.removeRidersListener();
-        this.updateRidersListener();
+        this.removeRidersListener(loadedRiders);
+        this.updateRidersListener(loadedRiders);
     }
 
-   removeRidersListener = ()=>{
+   removeRidersListener = (loadedRiders)=>{
         let loadedItem = {};
 
         this.state.ridersRef.on('child_removed',snap=>{
@@ -81,7 +79,7 @@ class Riders extends Component{
         })
     }
 
-    updateRidersListener = ()=>{
+    updateRidersListener = (loadedRiders)=>{
         let loadedItem = {};
         this.state.ridersRef.on('child_changed',snap=>{
             loadedItem=snap.val();

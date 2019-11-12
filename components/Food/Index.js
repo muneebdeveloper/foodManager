@@ -21,7 +21,7 @@ import DialogRemove from './DialogRemove';
 import styles from './index.css';
 
 
-let loadedFood=[];
+
 
 class Food extends Component{
 
@@ -65,7 +65,7 @@ class Food extends Component{
 
 
     componentDidMount(){
-
+        let loadedFood=[];
         let loadedRestaurants = [];
 
         firebase.database().ref("RESTAURANTS").on('child_added',snap=>{
@@ -94,11 +94,11 @@ class Food extends Component{
             })
         });
 
-        this.removeFoodListener();
-        this.updateFoodListener();
+        this.removeFoodListener(loadedFood);
+        this.updateFoodListener(loadedFood);
     }
 
-    removeFoodListener = ()=>{
+    removeFoodListener = (loadedFood)=>{
         let loadedItem = {};
 
         this.state.foodRef.on('child_removed',snap=>{
@@ -119,7 +119,7 @@ class Food extends Component{
         })
     }
 
-    updateFoodListener = ()=>{
+    updateFoodListener = (loadedFood)=>{
         let loadedItem = {};
         this.state.foodRef.on('child_changed',snap=>{
             loadedItem=snap.val();
@@ -163,8 +163,8 @@ class Food extends Component{
             .set({
                 id:key,
                 name,
-                price,
-                deliveryCharges,
+                price:Number(price),
+                deliveryCharges:Number(deliveryCharges),
                 restaurantID,
                 count:0,
                 restaurant:"null",

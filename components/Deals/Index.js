@@ -16,7 +16,6 @@ import DialogRemove from './DialogRemove';
 import styles from './index.css';
 
 
-  let loadedDeals=[];
 class Deals extends Component{
 
     state={
@@ -48,6 +47,7 @@ class Deals extends Component{
 
     componentDidMount(){
         
+        let loadedDeals=[];
 
         this.state.dealsRef.on('child_added',snap=>{
             loadedDeals.push(snap.val());
@@ -57,11 +57,11 @@ class Deals extends Component{
             })
         });
         
-        this.removeDealsListener();
-        this.updateDealsListener();
+        this.removeDealsListener(loadedDeals);
+        this.updateDealsListener(loadedDeals);
     }
 
-   removeDealsListener = ()=>{
+   removeDealsListener = (loadedDeals)=>{
         let loadedItem = {};
 
         this.state.dealsRef.on('child_removed',snap=>{
@@ -82,7 +82,7 @@ class Deals extends Component{
         })
     }
 
-    updateDealsListener = ()=>{
+    updateDealsListener = (loadedDeals)=>{
         let loadedItem = {};
         this.state.dealsRef.on('child_changed',snap=>{
             loadedItem=snap.val();
@@ -122,7 +122,7 @@ class Deals extends Component{
             .set({
                 id:key,
                 name,
-                price,
+                price:Number(price),
                 imageURI:url,
                 foodItems:[...foodData]
             }).then(

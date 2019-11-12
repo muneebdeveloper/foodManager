@@ -71,7 +71,7 @@ class DialogUpdate extends Component{
                 phone,
                 openingTime:openingTime.toLocaleTimeString('en-US', { hour: 'numeric', hour12: true, minute: 'numeric' }),
                 closingTime:closingTime.toLocaleTimeString('en-US', { hour: 'numeric', hour12: true, minute: 'numeric' }),
-                deliveryCharges
+                deliveryCharges:Number(deliveryCharges)
             })
             .then(()=>{
                 this.props.snackbarHandler("Restaurant was updated successfully");

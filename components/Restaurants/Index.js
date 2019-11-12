@@ -21,7 +21,7 @@ import styles from './index.css';
 
 
 
-  let loadedRestaurants=[];
+  
 class Category extends Component{
 
     state={
@@ -54,7 +54,7 @@ class Category extends Component{
     }
 
     componentDidMount(){
-        
+        let loadedRestaurants=[];      
 
         this.state.restaurantRef.on('child_added',snap=>{
             this.setState({
@@ -70,11 +70,11 @@ class Category extends Component{
 
     
 
-        this.removeCategoryListener();
-        this.updateCategoryListener();
+        this.removeCategoryListener(loadedRestaurants);
+        this.updateCategoryListener(loadedRestaurants);
     }
 
-   removeCategoryListener = ()=>{
+   removeCategoryListener = (loadedRestaurants)=>{
         let loadedItem = {};
 
         this.state.restaurantRef.on('child_removed',snap=>{
@@ -95,7 +95,7 @@ class Category extends Component{
         })
     }
 
-    updateCategoryListener = ()=>{
+    updateCategoryListener = (loadedRestaurants)=>{
         let loadedItem = {};
         this.state.restaurantRef.on('child_changed',snap=>{
             loadedItem=snap.val();
@@ -135,7 +135,7 @@ class Category extends Component{
                 phone,
                 openingTime:openingTime.toLocaleTimeString('en-US', { hour: 'numeric', hour12: true, minute: 'numeric' }),
                 closingTime:closingTime.toLocaleTimeString('en-US', { hour: 'numeric', hour12: true, minute: 'numeric' }),
-                deliveryCharges
+                deliveryCharges:Number(deliveryCharges)
             }).then(
                 ()=>{
                     this.setState({
