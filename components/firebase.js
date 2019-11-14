@@ -4,14 +4,14 @@ import 'firebase/database';
 import 'firebase/storage';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDorF4oFKCM5bsf96QrVfMa2tUyN7BuZeM",
-  authDomain: "foodsbag.firebaseapp.com",
-  databaseURL: "https://foodsbag.firebaseio.com",
-  projectId: "foodsbag",
-  storageBucket: "foodsbag.appspot.com",
-  messagingSenderId: "352088861740",
-  appId: "1:352088861740:web:33b743b64bc70363513589",
-  measurementId: "G-0WWMPSRFGS"
+  apiKey: "AIzaSyA2RxgI-b_nHm_zYk-qT2dVskQ0K80L634",
+  authDomain: "foodmanager-4c320.firebaseapp.com",
+  databaseURL: "https://foodmanager-4c320.firebaseio.com",
+  projectId: "foodmanager-4c320",
+  storageBucket: "foodmanager-4c320.appspot.com",
+  messagingSenderId: "958673678314",
+  appId: "1:958673678314:web:6444bb68363f93dea5cc93",
+  measurementId: "G-314830G8MN"
 };
   
   // Initialize Firebase
@@ -20,7 +20,7 @@ const firebaseConfig = {
   }
 
   
-  firebase.auth().signInWithEmailAndPassword("foodbag01@gmail.com", "potaraya12").catch(function(error) {
+  firebase.auth().signInWithEmailAndPassword("muneebakhlaqnt@gmail.com", "As12345").catch(function(error) {
     console.log("signin error",error);
   });
 

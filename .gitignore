@@ -18,7 +18,7 @@
 # misc
 .DS_Store
 .env*
-
+/components/firebase.js
 # debug
 npm-debug.log*
 yarn-debug.log*

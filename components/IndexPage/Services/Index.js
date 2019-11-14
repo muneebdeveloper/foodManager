@@ -46,16 +46,6 @@ const servicesData = [
         image:"riders.jpg",
         link:"/riders"
     },
-    {
-        title:"Orders",
-        image:"orders.jpg",
-        link:"/orders"
-    },
-    {
-        title:"Report",
-        image:"report.jpg",
-        link:"/report"
-    }
 ];
 
 const Services = ()=>{
